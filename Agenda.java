@@ -27,7 +27,7 @@ public class Agenda {
 					editContato();
 					break;
 				case 4:
-					System.out.println("\nEscolheu 4\n");
+					deleteContato();
 					break;
 			}
 		}while(option != 5);
@@ -41,8 +41,21 @@ public class Agenda {
 	
 		clearScreen();
 		input.nextLine(); //Sem essa linha não da pra dar espaço nas opções.
-		System.out.print("Digite o nome do contato: ");
-		String nome = input.nextLine();
+		boolean validName = false;
+		String nome = "";
+		while (!validName){
+			System.out.print("Digite o nome do contato: ");
+			nome = input.nextLine();
+			validName = true;
+			for (int i = 0; i < contatos.size(); i++){
+				if (contatos.get(i).getNome().equals(nome)){
+					System.out.println("Esse contato já existe.");
+					validName = false;
+					break;
+				}
+			}
+			
+		}
 		System.out.print("Digite o telefone do contato: ");
 		String telefone = input.nextLine();
 		System.out.print("Digite o endereço do contato: ");
@@ -71,10 +84,14 @@ public class Agenda {
 		input.nextLine();
 		System.out.println();
 		
-		for (int i = 0; i < contatos.size(); i ++){
-			System.out.print(contatos.get(i).getNome() + " - - - - ");
-			System.out.print(contatos.get(i).getTelefone() + " - - - - ");
-			System.out.println(contatos.get(i).getEndereco());
+		if (contatos.size() > 0){
+			for (int i = 0; i < contatos.size(); i ++){
+				System.out.print(contatos.get(i).getNome() + " - - - - ");
+				System.out.print(contatos.get(i).getTelefone() + " - - - - ");
+				System.out.println(contatos.get(i).getEndereco());
+			}
+		} else {
+			System.out.println("Lista de contatos vazia.");	
 		}
 		System.out.println("\nPressione Enter para voltar.");
 		input.nextLine();
@@ -94,56 +111,76 @@ public class Agenda {
 		String tel = "";
 		String local = "";
 		
-		for (int i = 0; i < contatos.size(); i++){
+		for (int i = 0; i < contatos.size() + 1; i++){
 		
 			/* Com essa estrutura, ele vai percorrer o array inteiro, e ao chegar no 
 			contato selecionado, vai alterar apenas aquilo que foi solicitado */
+			if (i < contatos.size()){
+				if (contatos.get(i).getNome().equals(selectName)){
+					clearScreen();
+					System.out.print("Editando: " + selectName + "\n");
+					System.out.println(editOpt);
+					int option = input.nextInt();
+					
+					clearScreen();
+					System.out.println("Editando: " + selectName + "\n");
+					switch (option){
+						case 1:
+							input.nextLine();
+							System.out.print("Escolha um novo nome: ");
+							name = input.nextLine();
+							System.out.println();
+							break;
+						case 2:
+							input.nextLine();
+							System.out.print("Escolha um novo número: ");
+							tel = input.nextLine();
+							System.out.println();
+							break;
+						case 3:
+							input.nextLine();
+							System.out.print("Escolha um novo endereço: ");
+							local = input.nextLine();
+							System.out.println();
+							break;
+						default:
+							clearScreen();
+							System.out.print("\n------ Opção inválida. ------\n");
+					}
+					Contato c1 = new Contato (
+						(name != "") ? name : contatos.get(i).getNome(),
+						(tel != "") ? tel : contatos.get(i).getTelefone(),
+						(local != "") ? local : contatos.get(i).getEndereco()
+					);
+					contatos.set(i, c1);
+					clearScreen();
+					System.out.println("Contato alterado!");
+					break;
+				}
+			} else {
+				clearScreen();
+				System.out.println("Esse contato não existe!");
+			}
+		}
+	}
+	
+	public static void deleteContato () {
 		
+		clearScreen();
+		System.out.println("\n----- Apagar -----\n");
+		
+		input.nextLine();
+		System.out.print("Nome do contato: ");
+		String selectName = input.nextLine();
+		
+		for (int i = 0; i < contatos.size(); i++){
 			if (contatos.get(i).getNome().equals(selectName)){
 				clearScreen();
-				System.out.print("Editando: " + selectName + "\n");
-				System.out.println(editOpt);
-				int option = input.nextInt();
-				
-				clearScreen();
-				System.out.println("Editando: " + selectName + "\n");
-				switch (option){
-					case 1:
-						input.nextLine();
-						System.out.print("Escolha um novo nome: ");
-						name = input.nextLine();
-						System.out.println();
-						break;
-					case 2:
-						input.nextLine();
-						System.out.print("Escolha um novo número: ");
-						tel = input.nextLine();
-						System.out.println();
-						break;
-					case 3:
-						input.nextLine();
-						System.out.print("Escolha um novo endereço: ");
-						local = input.nextLine();
-						System.out.println();
-						break;
-					default:
-						clearScreen();
-						System.out.print("\n------ Opção inválida. ------\n");
-				}
-				Contato c1 = new Contato (
-					(name != "") ? name : contatos.get(i).getNome(),
-					(tel != "") ? tel : contatos.get(i).getTelefone(),
-					(local != "") ? local : contatos.get(i).getEndereco()
-				);
-				contatos.set(i, c1);
-				clearScreen();
+				System.out.println(contatos.get(i).getNome() + " foi removido!");
+				contatos.remove(i);
 				break;
 			}
 		}
-		System.out.println("\nNão existe contato com esse nome!");
-		System.out.println("\nPressione Enter para voltar.");
-		input.nextLine();
-		clearScreen();
 	}
 	
 	public static void clearScreen() {
